@@ -1,6 +1,5 @@
 // For bookmarks creation
 chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
-  
   promptUserForPreference(bookmarkNode.url);
 });
 chrome.tabs.onCreated.addListener((tab) => {

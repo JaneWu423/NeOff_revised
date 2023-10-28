@@ -9,8 +9,9 @@
     },
     "permissions": [
       "bookmarks",
-      "notifications"],
-          "background": {
-          "service_worker": "./public/sendurl.js" 
-        }
+      "notifications"
+    ],
+    "background": {
+      "service_worker": "./public/sendurl.js" 
+    }
 }
