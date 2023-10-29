@@ -44,18 +44,13 @@ chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
     // addUrl(bookmarkNode.url);
   });
 });
-<<<<<<< HEAD
-chrome.tabs.onCreated.addListener((tab) => {
-  if (!tab.url) return;
-  
-  promptUserForPreference(tab.url);
-=======
+
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
     promptUserForFeedback(tab.url);
   }
->>>>>>> c31431431dd7cafe61678a416d6213a1d3f75b0e
+
 });
 
 const promptUserForFeedback = async (url) => {
