@@ -158,7 +158,7 @@ export const Recommend = () => {
     const [inputVal, setInputVal] = useState('');
     const [mode, setMode] = useState('');
     const [processing, setProcessing] = useState(false)
-    let prevInput = "";
+    const [prevInput, setPrevInput] = useState('')
 
 
     const addUrl = function () {
@@ -167,11 +167,11 @@ export const Recommend = () => {
             setText("Please enter a valid URL");
             return;
         }else if (prevInput === inputVal) {
-            prevInput = inputVal;
+            setPrevInput(inputVal);
             setText("You already shared it!");
             return;
         }else{
-            prevInput = inputVal;
+        setPrevInput(inputVal);
         setProcessing(true);
         let url = inputVal;
         const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
