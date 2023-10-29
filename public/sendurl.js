@@ -45,12 +45,10 @@ chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
   });
 });
 
-
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
     promptUserForFeedback(tab.url);
   }
-
 });
 
 const promptUserForFeedback = async (url) => {
@@ -61,8 +59,9 @@ const promptUserForFeedback = async (url) => {
     console.log(2);
     chrome.notifications.create({
       type: "basic",
-      iconUrl: "https://icon.horse/icon/youtube.com", // You can provide the path to your extension's icon or another relevant icon
-      title: "Website Feedback",
+      iconUrl:
+        "https://res.cloudinary.com/dmpx9tjf3/image/upload/v1698571992/neoff/iftbzuq328fro5eovolr.png", // You can provide the path to your extension's icon or another relevant icon
+      title: "NeOff wants to know...",
       message: "Do you like this recommendation?",
       buttons: [{ title: "Yes" }, { title: "No" }],
     });
@@ -73,12 +72,13 @@ const promptUserForFeedback = async (url) => {
 function showNotification(title, message) {
   chrome.notifications.create("Id", {
     type: "basic",
-    iconUrl: "https://icon.horse/icon/youtube.com", // Path to your extension's icon or any other asset
+    iconUrl:
+      "https://res.cloudinary.com/dmpx9tjf3/image/upload/v1698571992/neoff/iftbzuq328fro5eovolr.png", // Path to your extension's icon or any other asset
     title: title,
     message: message,
   });
 }
-const like = async function (url,name) {
+const like = async function (url, name) {
   const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
   const querySnapshot = await getDocs(q);
   if (!querySnapshot.empty) {
@@ -101,9 +101,10 @@ const like = async function (url,name) {
 function promptUserForPreference(url) {
   chrome.notifications.create({
     type: "basic",
-    title: "URL Preference",
-    message: `Do you like the website: ${url}?`,
-    iconUrl: "https://icon.horse/icon/youtube.com",
+    title: "NeOff wants to know...",
+    message: `Do you like this website?`,
+    iconUrl:
+      "https://res.cloudinary.com/dmpx9tjf3/image/upload/v1698571992/neoff/iftbzuq328fro5eovolr.png",
     buttons: [{ title: "Share!" }, { title: "Never!" }],
   });
 }
@@ -139,7 +140,7 @@ chrome.notifications.onButtonClicked.addListener((thisNoteId, buttonIndex) => {
 
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         var currentTab = tabs[0];
-        like(currentTab.url,currentTab.title); // Log the URL of the current tab
+        like(currentTab.url, currentTab.title); // Log the URL of the current tab
       });
 
       break;

@@ -7,6 +7,14 @@
     "default_popup": "./index.html",
     "default_title": "NeOff"
   },
+
+
+  "icons": {
+    "16": "./public/NeOff_16.png",
+    "48": "./public/NeOff_48.png",
+    "128": "./public/NeOff_128.png"
+  },
+
   "permissions": [
     "bookmarks",
     "notifications",
