@@ -104,7 +104,7 @@ const NeonObj = ({ data }) => {
 
                 <div style={{ marginLeft: "1em" }}>
                     <NeonText text={name} />
-                    <a href={validUrl} style={{textDecoration: "none"}}>Visit Site</a>
+                    <a href={validUrl} style={{textDecoration: "none"}} target="_blank">Visit Site</a>
                 </div>
             </div>
             <IconDiv>
