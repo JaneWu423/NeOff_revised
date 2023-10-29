@@ -34,10 +34,10 @@ chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
 
   });
 });
-chrome.tabs.onCreated.addListener((tab) => {
-  if (!tab.url) return;
-  
-  promptUserForPreference(tab.url);
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url) {
+    promptUserForPreference(tab.url);
+  }
 });
 function showNotification(title, message) {
   chrome.notifications.create('Id', {

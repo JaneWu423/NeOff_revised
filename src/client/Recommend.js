@@ -18,7 +18,6 @@ const db = getFirestore(app);
 
 
 const IconDiv = styled.div`
-    margin-left: 3em;
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -28,7 +27,6 @@ const LineDiv = styled.div`
     align-items: center;
     flex-direction: row;
     margin-top: 0.5em;
-    width: 100%;
     justify-content: space-between;
 `
 
@@ -134,7 +132,7 @@ const NeonObj = ({ data }) => {
 
 const NeonList = ({ list }) => {
     return (
-        <div>
+        <div style={{display:"flex",flexDirection:"column", alignItems:"center"}}>
             {list.map(item => (
                 <NeonObj data={item} />
             ))}
@@ -199,16 +197,21 @@ export const Recommend = () => {
         }
     }
 
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+          selectTop()
+        }, 1000); // Refresh every 5 seconds
+    
+        // Clear the interval when the component unmounts
+        return () => clearInterval(intervalId);
+    }, []);
+
     const selectTop = function(){
-        console.log(0)
         const urlsRef = collection(db, "urls");
-        console.log(0.5)
         const q = query(urlsRef, orderBy("like","desc"), limit(5));
-        console.log(1)
         const ret = [];
         getDocs(q).then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                // console.log(doc.id, " => ", doc.data());
                 ret.push({url: doc.data().url, iconUrl: doc.data().iconUrl, like: doc.data().like, dislike: doc.data().dislike, name: doc.data().name})
             });
             setRec(ret)
