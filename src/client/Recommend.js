@@ -59,13 +59,14 @@ function getValidUrl(url) {
 
 const NeonObj = ({ data }) => {
     const url = data.url;
-    let name = data.name;
-    if(name){name = (name.length <= 30) ? name: name.slice(0, 25) + '...';}
+    let name = "Random Site";
+    if(data.name){name = data.name};
+    name = (name.length <= 30) ? name: name.slice(0, 25) + '...';
     const icon = data.iconUrl;
     const like = data.like;
     const dislike = data.dislike;
 
-    const validUrl = getValidUrl(url);
+    const validUrl = url?getValidUrl(url):"www.google.com";
 
     const likeUrl = async function () {
         const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
@@ -161,6 +162,7 @@ export const Recommend = () => {
 
 
     const addUrl = function () {
+        console.log(`inputVal: ${inputVal}`, ` prevInput: ${prevInput}`)
         if (inputVal === '' || !isValidURL(inputVal)) {
             setText("Please enter a valid URL");
             return;
