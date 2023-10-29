@@ -13,16 +13,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// import reportWebVitals from './reportWebVitals.js';
 
 import {
   getFirestore,
   collection,
   query,
   where,
-  doc,
-  getDoc,
-  setDoc,
   addDoc,
   updateDoc,
   increment,
@@ -38,10 +34,6 @@ chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
 
     const tab = tabs[0];
     promptUserForPreference(bookmarkNode.url);
-    // console.log(JSON.stringify(tab.url));
-    // console.log(JSON.stringify(tab.title));
-    // console.log(JSON.stringify(tab.favIconUrl));
-    // addUrl(bookmarkNode.url);
   });
 });
 
@@ -108,28 +100,6 @@ function promptUserForPreference(url) {
     buttons: [{ title: "Share!" }, { title: "Never!" }],
   });
 }
-function sendDataToServer(title, url, icon) {}
-
-// const addUrl = async function(url) {
-//   const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
-//   const querySnapshot = await getDocs(q);
-//   if (querySnapshot.empty) {
-//       const docRef = await addDoc(collection(db, "urls"), {
-//           dislike: 0,
-//           iconUrl: `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=16`,
-//           like: 0,
-//           name: "Test",
-//           report : 0,
-//           url: url,
-//           totalViewed: 0,
-//       });
-//   } else {
-//       let ref = querySnapshot.docs[0].ref;
-//       let ret = await updateDoc(ref, {
-//          like: increment(1)
-//       });
-//   }
-// }
 
 chrome.notifications.onButtonClicked.addListener((thisNoteId, buttonIndex) => {
   console.log(buttonIndex);

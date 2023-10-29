@@ -1,0 +1,10 @@
+{
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "name": "Neon",
+    "description": "This is a Chrome extension built with React and Javascript",
+    "action": {
+        "default_popup": "./index.html",
+        "default_title": "Neon"
+    }
+}

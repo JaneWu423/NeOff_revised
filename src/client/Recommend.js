@@ -10,7 +10,7 @@ const firebaseConfig = {
     messagingSenderId: "700079134322",
     appId: "1:700079134322:web:81c95ff7175e428c2354eb"
 };
-import { Input , InputGroup, InputLeftElement, Box, useToast, Spinner} from '@chakra-ui/react'
+import { Input , InputGroup, InputLeftElement, Spinner} from '@chakra-ui/react'
 import { LinkIcon } from '@chakra-ui/icons';
 import { getFirestore, collection, query, where, getCountFromServer, addDoc, updateDoc, increment, limit, getDocs, orderBy } from "firebase/firestore";
 const app = initializeApp(firebaseConfig);
@@ -50,9 +50,9 @@ const NeonText = ({ text }) => {
 
 function getValidUrl(url) {
     if (url.startsWith('http://') || url.startsWith('https://')) {
-        return url; // The URL is already valid
+        return url; 
     } else {
-        return `http://${url}`; // Prefix with http://
+        return `http://${url}`; 
     }
 }
 
@@ -60,10 +60,10 @@ function getValidUrl(url) {
 const NeonObj = ({ data }) => {
     const url = data.url;
     let name = data.name;
-    name = (name.length <= 25) ? name: name.slice(0, 20) + '...';
+    if(name){name = (name.length <= 30) ? name: name.slice(0, 25) + '...';}
     const icon = data.iconUrl;
-    const [like, setLike] = useState(data.like);
-    const [dislike, setDislike] = useState(data.dislike);
+    const like = data.like;
+    const dislike = data.dislike;
 
     const validUrl = getValidUrl(url);
 
@@ -75,7 +75,7 @@ const NeonObj = ({ data }) => {
             let ret = await updateDoc(ref, {
                 like: increment(1)
             });
-            setLike(like + 1);
+            
         } else {
             return "Not exist"
         }
@@ -89,7 +89,7 @@ const NeonObj = ({ data }) => {
             let ret = await updateDoc(ref, {
                 dislike: increment(1)
             });
-            setDislike(dislike + 1);
+            
         } else {
             return "Not exist"
         }
@@ -152,30 +152,24 @@ const NeonList = ({ list }) => {
     )
 }
 const defaultData = [{ url: "", name: "", icon: "", like: 0, dislike: 0, report: 0 }];
-// const getName = (url) => {
-//     const validUrl = getValidUrl(url);
-//     fetch(validUrl, {
-//         mode: 'no-cors',
-//     })
-//         .then(response => response.text())
-//         .then(html => {
-//             const parser = new DOMParser();
-//             const doc = parser.parseFromString(html, 'text/html');
-//             const title = doc.querySelector('title').innerText;
-//             return title;
-//         }).catch(err => { return null; });
-// }
+
 export const Recommend = () => {
     const [inputVal, setInputVal] = useState('');
     const [mode, setMode] = useState('');
     const [processing, setProcessing] = useState(false)
+    let prevInput = "";
 
 
     const addUrl = function () {
         if (inputVal === '' || !isValidURL(inputVal)) {
             setText("Please enter a valid URL");
             return;
-        }
+        }else if (prevInput === inputVal) {
+            prevInput = inputVal;
+            setText("You already shared it!");
+            return;
+        }else{
+            prevInput = inputVal;
         setProcessing(true);
         let url = inputVal;
         const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
@@ -197,8 +191,8 @@ export const Recommend = () => {
                 }).then(() => {setText("Site exists, Liked!")}).catch(err => { setProcessing(false); });
             }
         }).catch(err => { setProcessing(false); })
-        setInputVal('');
         setProcessing(false);
+        }
     }
 
     let [text, setText] = useState("");
@@ -212,10 +206,9 @@ export const Recommend = () => {
             intervalId = setInterval(() => {
                 selectTop();
                 console.log(`refresh ${mode}`);
-            }, 2000);
+            }, 1000);
         }
 
-        // Clear the interval when the component unmounts
         return () => clearInterval(intervalId);
     }, [mode]);
 
@@ -234,12 +227,11 @@ export const Recommend = () => {
 
     const selectRandom = async function () {
         setMode("random");
-        const randomArray = [-1, -1, -1, -1, -1]
+        const randomArray = [-1, -1, -1, -1, -1];
 
         if (collectionSize < randomArray.length) {
             return;
         }
-        //Get the total size of collection
         const coll = collection(db, "urls");
         const snapshot = await getCountFromServer(coll);
         const collectionSize = snapshot.data().count;
@@ -288,7 +280,7 @@ export const Recommend = () => {
 
             <div className="container">
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <h1 className="neon-text-flicker" style={{ marginTop: "0.5em", marginBottom: "0.2em", fontSize: "20px" }}>Share Site?</h1>
+                    <h1 className="neon-text-flicker" style={{ marginTop: "0.5em", marginBottom: "0.2em", fontSize: "25px" }}>Share Site?</h1>
                     
                     <InputGroup>
                         <InputLeftElement
