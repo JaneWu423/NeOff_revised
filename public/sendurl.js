@@ -1,6 +1,6 @@
 // For bookmarks creation
-import React from 'react';
-import { initializeApp } from 'firebase/app';
+import React from "react";
+import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD68VVTgiVceafaNB-Brrp-I9-_xiTLEBo",
@@ -8,16 +8,27 @@ const firebaseConfig = {
   projectId: "vandyhack2023",
   storageBucket: "vandyhack2023.appspot.com",
   messagingSenderId: "700079134322",
-  appId: "1:700079134322:web:81c95ff7175e428c2354eb"
+  appId: "1:700079134322:web:81c95ff7175e428c2354eb",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 // import reportWebVitals from './reportWebVitals.js';
 
-
-
-import { getFirestore, collection, query, where, doc, getDoc, setDoc, addDoc, updateDoc, increment, limit, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  updateDoc,
+  increment,
+  limit,
+  getDocs,
+} from "firebase/firestore";
 
 chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
   if (!bookmarkNode.url) return;
@@ -31,57 +42,77 @@ chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
     // console.log(JSON.stringify(tab.title));
     // console.log(JSON.stringify(tab.favIconUrl));
     // addUrl(bookmarkNode.url);
-
   });
 });
+<<<<<<< HEAD
 chrome.tabs.onCreated.addListener((tab) => {
   if (!tab.url) return;
   
   promptUserForPreference(tab.url);
+=======
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tab.url) {
+    promptUserForFeedback(tab.url);
+  }
+>>>>>>> c31431431dd7cafe61678a416d6213a1d3f75b0e
 });
+
+const promptUserForFeedback = async (url) => {
+  console.log(JSON.stringify(url));
+  const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
+  const querySnapshot = await getDocs(q);
+  if (!querySnapshot.empty) {
+    console.log(2);
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: "https://icon.horse/icon/youtube.com", // You can provide the path to your extension's icon or another relevant icon
+      title: "Website Feedback",
+      message: "Do you like this recommendation?",
+      buttons: [{ title: "Yes" }, { title: "No" }],
+    });
+  }
+  // Add any other logic you want for this function
+};
+
 function showNotification(title, message) {
-  chrome.notifications.create('Id', {
-    type: 'basic',
-    iconUrl: 'https://icon.horse/icon/youtube.com',  // Path to your extension's icon or any other asset
+  chrome.notifications.create("Id", {
+    type: "basic",
+    iconUrl: "https://icon.horse/icon/youtube.com", // Path to your extension's icon or any other asset
     title: title,
-    message: message
+    message: message,
   });
 }
-const like = async function (url) {
+const like = async function (url,name) {
   const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
   const querySnapshot = await getDocs(q);
   if (!querySnapshot.empty) {
     let ref = querySnapshot.docs[0].ref;
     let ret = await updateDoc(ref, {
-      like: increment(1)
+      like: increment(1),
     });
   } else {
     const docRef = await addDoc(collection(db, "urls"), {
       dislike: 0,
       iconUrl: `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=16`,
       like: 0,
-      name: "Test",
+      name: name,
       report: 0,
       url: url,
       totalViewed: 0,
     });
   }
-}
+};
 function promptUserForPreference(url) {
   chrome.notifications.create({
     type: "basic",
     title: "URL Preference",
     message: `Do you like the website: ${url}?`,
-    iconUrl: 'https://icon.horse/icon/youtube.com',
-    buttons: [
-      { title: "Share!" },
-      { title: "Never!" }
-    ]
+    iconUrl: "https://icon.horse/icon/youtube.com",
+    buttons: [{ title: "Share!" }, { title: "Never!" }],
   });
 }
-function sendDataToServer(title, url, icon) {
-
-}
+function sendDataToServer(title, url, icon) {}
 
 // const addUrl = async function(url) {
 //   const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
@@ -97,7 +128,7 @@ function sendDataToServer(title, url, icon) {
 //           totalViewed: 0,
 //       });
 //   } else {
-//       let ref = querySnapshot.docs[0].ref; 
+//       let ref = querySnapshot.docs[0].ref;
 //       let ret = await updateDoc(ref, {
 //          like: increment(1)
 //       });
@@ -105,7 +136,6 @@ function sendDataToServer(title, url, icon) {
 // }
 
 chrome.notifications.onButtonClicked.addListener((thisNoteId, buttonIndex) => {
-
   console.log(buttonIndex);
   console.log(20);
   switch (buttonIndex) {
@@ -114,7 +144,7 @@ chrome.notifications.onButtonClicked.addListener((thisNoteId, buttonIndex) => {
 
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         var currentTab = tabs[0];
-        like(currentTab.url); // Log the URL of the current tab
+        like(currentTab.url,currentTab.title); // Log the URL of the current tab
       });
 
       break;
@@ -128,16 +158,15 @@ chrome.notifications.onButtonClicked.addListener((thisNoteId, buttonIndex) => {
   }
 });
 
-
 const dislike = async function (url) {
   const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
   const querySnapshot = await getDocs(q);
   if (!querySnapshot.empty) {
     let ref = querySnapshot.docs[0].ref;
     let ret = await updateDoc(ref, {
-      dislike: increment(1)
+      dislike: increment(1),
     });
   } else {
-    return "Not exist"
+    return;
   }
-}
+};
