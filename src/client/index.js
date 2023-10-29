@@ -2,13 +2,16 @@ import React from 'react';
 import { createRoot } from "react-dom/client";
 import './index.css';
 import { Recommend } from './Recommend.js';
+import { ChakraProvider } from '@chakra-ui/react'
 
 document.addEventListener("DOMContentLoaded", function () {
   const root = createRoot(document.getElementById("root"));
   root.render(
     <React.StrictMode>
       {/* <App /> */}
+      <ChakraProvider>
       <Recommend />
+      </ChakraProvider>
     </React.StrictMode>
   );
 });

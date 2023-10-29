@@ -9,17 +9,18 @@ const firebaseConfig = {
     storageBucket: "vandyhack2023.appspot.com",
     messagingSenderId: "700079134322",
     appId: "1:700079134322:web:81c95ff7175e428c2354eb"
-  };
-
-import { getFirestore, collection, query, where, doc, getDoc, setDoc, addDoc, updateDoc, increment, limit , getDocs, orderBy} from "firebase/firestore";
-
+};
+import { Input , InputGroup, InputLeftElement, Box, useToast, Spinner} from '@chakra-ui/react'
+import { LinkIcon } from '@chakra-ui/icons';
+import { getFirestore, collection, query, where, getCountFromServer, addDoc, updateDoc, increment, limit, getDocs, orderBy } from "firebase/firestore";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
 const IconDiv = styled.div`
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
     flex-direction: row;
 `
 const LineDiv = styled.div`
@@ -28,11 +29,20 @@ const LineDiv = styled.div`
     flex-direction: row;
     margin-top: 0.5em;
     justify-content: space-between;
+    width: 90%;
 `
+
+
+const urlPattern = /^((https?|ftp):\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})(:[0-9]+)?(\/\S*)?$/;
+
+function isValidURL(url) {
+  return urlPattern.test(url);
+}
+
 
 const NeonText = ({ text }) => {
     return (
-        <div className="neon-text-pulse">
+        <div className="neon-text">
             {text}
         </div>
     )
@@ -40,55 +50,58 @@ const NeonText = ({ text }) => {
 
 function getValidUrl(url) {
     if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url; // The URL is already valid
+        return url; // The URL is already valid
     } else {
-      return `http://${url}`; // Prefix with http://
+        return `http://${url}`; // Prefix with http://
     }
-  }
+}
 
 
 const NeonObj = ({ data }) => {
     const url = data.url;
-    const name = data.name;
+    let name = data.name;
+    name = (name.length <= 25) ? name: name.slice(0, 20) + '...';
     const icon = data.iconUrl;
-    const like = data.like;
-    const dislike = data.dislike;
+    const [like, setLike] = useState(data.like);
+    const [dislike, setDislike] = useState(data.dislike);
 
     const validUrl = getValidUrl(url);
-    
-    const likeUrl = async function() {
+
+    const likeUrl = async function () {
         const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-            let ref = querySnapshot.docs[0].ref; 
+            let ref = querySnapshot.docs[0].ref;
             let ret = await updateDoc(ref, {
-               like: increment(1)
+                like: increment(1)
             });
+            setLike(like + 1);
         } else {
             return "Not exist"
         }
     }
 
-    const dislikeUrl = async function() {
+    const dislikeUrl = async function () {
         const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-            let ref = querySnapshot.docs[0].ref; 
+            let ref = querySnapshot.docs[0].ref;
             let ret = await updateDoc(ref, {
-               dislike: increment(1)
+                dislike: increment(1)
             });
+            setDislike(dislike + 1);
         } else {
             return "Not exist"
         }
     }
 
-    const reportUrl = async function() {
+    const reportUrl = async function () {
         const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-            let ref = querySnapshot.docs[0].ref; 
+            let ref = querySnapshot.docs[0].ref;
             let ret = await updateDoc(ref, {
-               report: increment(1)
+                report: increment(1)
             });
         } else {
             return "Not exist"
@@ -97,42 +110,41 @@ const NeonObj = ({ data }) => {
 
     return (
         <LineDiv className="neon-text-box">
-            <div style={{display:"flex",flexDirection:"row"}}>
+            <div style={{ display: "flex", flexDirection: "row" }}>
                 <img src={icon} style={{ width: "25px", height: "25px" }} />
 
-                <div style={{ marginLeft: "1em" }}>
+                <div style={{ marginLeft: "0.5em",overflow:"hidden",maxWidth: "400px",  }}>
                     <NeonText text={name} />
-                    <a href={validUrl} style={{textDecoration: "none"}} target="_blank">Visit Site</a>
+                    <a href={validUrl} style={{ textDecoration: "none" }} target="_blank">Visit Site</a>
                 </div>
             </div>
             <IconDiv>
-                <div style={{ marginLeft: "1em" }}>
-                    <svg className="heart" width="24" height="30" viewBox="0 0 24 30" fill="none" onClick={likeUrl}>
-                        <path
-                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-                </div><div style={{ marginLeft: "0.3em" }}>{like}</div>
-                <div style={{ marginLeft: "1em" }}>
-                    <svg width="24" height="30" viewBox="0 0 24 30" className="heart" onClick={dislikeUrl}>
-                        <line x1="3" y1="20" x2="20" y2="3" stroke-width="2" />
-                        <line x1="3" y1="3" x2="20" y2="20" stroke-width="2" />
-                    </svg>
-                </div>
-                <div > {dislike} </div>
-                <div className="neon-btn-sm" style={{ marginLeft: "1em" }} onClick={reportUrl}>Report</div>
+
+                <svg className="heart" width="24" height="24" viewBox="0 0 24 24" fill="none" onClick={likeUrl} style={{ marginLeft: "0.2em" }}>
+                    <path
+                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+
+                <div style={{ marginLeft: "0.2em" }}>{like}</div>
+                <svg width="24" height="24" viewBox="0 0 24 24" className="heart" onClick={dislikeUrl} style={{ marginLeft: "0.2em" }}>
+                    <line x1="3" y1="20" x2="20" y2="3" stroke-width="2" />
+                    <line x1="3" y1="3" x2="20" y2="20" stroke-width="2" />
+                </svg>
+
+                <div style={{ marginLeft: "0.2em" }}> {dislike} </div>
+                <div className="neon-btn-sm" onClick={reportUrl} style={{ marginLeft: "0.3em" }}>Report</div>
             </IconDiv>
-            <div></div>
         </LineDiv>
     )
 }
 
 const NeonList = ({ list }) => {
     return (
-        <div style={{display:"flex",flexDirection:"column", alignItems:"center"}}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             {list.map(item => (
                 <NeonObj data={item} />
             ))}
@@ -140,116 +152,168 @@ const NeonList = ({ list }) => {
     )
 }
 const defaultData = [{ url: "", name: "", icon: "", like: 0, dislike: 0, report: 0 }];
-const getName = (url) =>{
-    const validUrl = getValidUrl(url);
-    fetch(validUrl, {
-        mode: 'no-cors',
-      })
-        .then(response => response.text())
-        .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const title = doc.querySelector('title').innerText;
-        return title;
-        }).catch(err => {return null;});
-}
+// const getName = (url) => {
+//     const validUrl = getValidUrl(url);
+//     fetch(validUrl, {
+//         mode: 'no-cors',
+//     })
+//         .then(response => response.text())
+//         .then(html => {
+//             const parser = new DOMParser();
+//             const doc = parser.parseFromString(html, 'text/html');
+//             const title = doc.querySelector('title').innerText;
+//             return title;
+//         }).catch(err => { return null; });
+// }
 export const Recommend = () => {
     const [inputVal, setInputVal] = useState('');
+    const [mode, setMode] = useState('');
+    const [processing, setProcessing] = useState(false)
 
 
-    const addUrl = async function() {
+    const addUrl = function () {
+        if (inputVal === '' || !isValidURL(inputVal)) {
+            setText("Please enter a valid URL");
+            return;
+        }
+        setProcessing(true);
         let url = inputVal;
         const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
-        const querySnapshot = await getDocs(q);
-        const name = getName(url);
-        console.log("generatedname: ", name)
-        if (querySnapshot.empty) {
-            const docRef = await addDoc(collection(db, "urls"), {
-                dislike: 0,
-                iconUrl: `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=16`,
-                like: 0,
-                name: name? name : url,
-                report : 0,
-                url: url,
-                totalViewed: 0,
-            });
-        } else {
-            let ref = querySnapshot.docs[0].ref; 
-            let ret = await updateDoc(ref, {
-               like: increment(1)
-            });
-        }
+        getDocs(q).then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                addDoc(collection(db, "urls"), {
+                    dislike: 0,
+                    iconUrl: `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=16`,
+                    like: 0,
+                    name: url,
+                    report: 0,
+                    url: url,
+                    totalViewed: 0,
+                }).then(() => {setText("Site Shared!")}).catch(err => { setProcessing(false); });
+            } else {
+                let ref = querySnapshot.docs[0].ref;
+                updateDoc(ref, {
+                    like: increment(1)
+                }).then(() => {setText("Site exists, Liked!")}).catch(err => { setProcessing(false); });
+            }
+        }).catch(err => { setProcessing(false); })
+        setInputVal('');
+        setProcessing(false);
     }
 
     let [text, setText] = useState("");
     let [rec, setRec] = useState(defaultData);
-
-    const randomSite = async function () {
-        const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-            let ref = querySnapshot.docs[0].ref; 
-            let ret = await updateDoc(ref, {
-               like: increment(1)
-            });
-        } else {
-            return "Not exist"
-        }
-    }
+    let [recR, setRecR] = useState(defaultData);
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-          selectTop()
-        }, 1000); // Refresh every 5 seconds
-    
+        // Create a variable to hold the interval ID
+        let intervalId;
+        if (mode === 'top') {
+            intervalId = setInterval(() => {
+                selectTop();
+                console.log(`refresh ${mode}`);
+            }, 2000);
+        }
+
         // Clear the interval when the component unmounts
         return () => clearInterval(intervalId);
-    }, []);
+    }, [mode]);
 
-    const selectTop = function(){
+    const selectTop = function () {
+        setMode("top");
         const urlsRef = collection(db, "urls");
-        const q = query(urlsRef, orderBy("like","desc"), limit(5));
+        const q = query(urlsRef, orderBy("like", "desc"), limit(5));
         const ret = [];
         getDocs(q).then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                ret.push({url: doc.data().url, iconUrl: doc.data().iconUrl, like: doc.data().like, dislike: doc.data().dislike, name: doc.data().name})
+                ret.push({ url: doc.data().url, iconUrl: doc.data().iconUrl, like: doc.data().like, dislike: doc.data().dislike, name: doc.data().name })
             });
             setRec(ret)
-    })}
+        })
+    }
+
+    const selectRandom = async function () {
+        setMode("random");
+        const randomArray = [-1, -1, -1, -1, -1]
+
+        if (collectionSize < randomArray.length) {
+            return;
+        }
+        //Get the total size of collection
+        const coll = collection(db, "urls");
+        const snapshot = await getCountFromServer(coll);
+        const collectionSize = snapshot.data().count;
+
+        let randomUrls = []
+        let ret = []
+
+        const q = query(coll, limit(collectionSize));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc, index) => {
+            ret.push({ url: doc.data().url, iconUrl: doc.data().iconUrl, like: doc.data().like, dislike: doc.data().dislike, name: doc.data().name })
+        });
+
+        for (let i = 0; i < randomArray.length; ++i) {
+            let randomIndex = Math.floor(Math.random() * collectionSize);
+            while (randomArray.includes(randomIndex)) {
+                randomIndex = Math.floor(Math.random() * collectionSize);
+            }
+            randomArray[i] = randomIndex
+            randomUrls.push(ret[randomIndex])
+        }
+        setRecR(randomUrls)
+    }
+
 
     const handleInputChange = (e) => {
+        setText("");
         setInputVal(e.target.value);
-      };
+    };
 
     return (
-        <div className="App" style={{ backgroundColor: "black" }}>
-            <header className="App-header">
+        <div className="App" style={{ backgroundColor: "black", marginBottom: "0.2em" }}>
+            <header className="NeOff">
             </header>
+            {processing ? <Spinner
+                        position="absolute"
+                        top="30%"
+                        left="auto"
+                        transform="translate(-50%, -50%)"
+                        color='#e85ff5'
+                        thickness='4px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        size='xl'
+                        /> : null }
 
             <div className="container">
-                <div style={{display: "flex", flexDirection:"column", alignItems:"center"}}>
-                <h1 className="neon-text-flicker" style={{marginTop:"0.5em",marginBottom:"0.2em",fontSize:"15px"}}>Share Site?</h1>
-                <input
-                    type="text"
-                    id="textInput"
-                    name="textInput"
-                    onChange={handleInputChange}
-                />
-                 <div className="neon-btn" onClick={addUrl} style={{marginTop:"0.2em", fontSize:"15px"}}>
-                    <NeonText text="Add Site" />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <h1 className="neon-text-flicker" style={{ marginTop: "0.5em", marginBottom: "0.2em", fontSize: "20px" }}>Share Site?</h1>
+                    
+                    <InputGroup>
+                        <InputLeftElement
+                            pointerEvents="none"
+                            children={<LinkIcon color="gray.300" boxSize="3" />}
+                        />
+                        <Input placeholder="Enter URL" onChange={(e) => handleInputChange(e)} w='50'/>
+                    </InputGroup>
+                    <h1 className="neon-text-flicker" style={{ marginTop: "0.5em", marginBottom: "0.2em", fontSize: "20px" }}>{text}</h1>
+
+                    <div className="neon-btn" onClick={addUrl} style={{ marginTop: "0.2em", fontSize: "15px" }}>
+                        <NeonText text="Add Site" />
+                    </div>
                 </div>
-                </div>
-                <hr className="divider"/>
-                <div style={{display: "flex", flexDirection:"column", alignItems:"center"}}>
-                    <div className="neon-btn" onClick={randomSite} style={{marginTop:"0.5em"}}>
+                <hr className="divider" />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div className="neon-btn" onClick={selectRandom} style={{ marginTop: "0.2em" }}>
                         <NeonText text="Random Site" />
                     </div>
-                    <div className="neon-btn" onClick={selectTop} style={{marginTop:"0.5em"}}>
+                    <div className="neon-btn" onClick={selectTop} style={{ marginTop: "0.5em" }}>
                         <NeonText text="Top Site" />
                     </div>
                 </div>
                 <div style={{ marginTop: "0.5em" }}>
-                    {rec === defaultData ? null : <NeonList list={rec} />}
+                    {(rec !== defaultData && mode === "top") ? <NeonList list={rec} /> : (recR != defaultData && mode === "random") ? <NeonList list={recR} /> : null}
                 </div>
             </div>
         </div>
