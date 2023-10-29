@@ -11,8 +11,7 @@
       "bookmarks",
       "notifications",
       "tabs",
-      "downloads",
-      "http://localhost:3000/"],
+      "downloads"],
     "background": {
         "service_worker": "./public/sendurl.js" 
       }

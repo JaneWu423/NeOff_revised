@@ -1,5 +1,6 @@
 :root {
   --color-primary: #16c9ff;
+  --color-text: #e85ff5;
 }
 
 .container{
@@ -9,17 +10,14 @@
   justify-content: center;
   height: 100vh;
 }
+
+
 .neon-text-box {
   width: fit-content;
   padding: 25px 30px;
   border: 0.1em solid #fff;
   border-radius: 2rem;
-  box-shadow: 0 0 .2rem #fff,
-              0 0 .2rem #fff,
-              0 0 2rem var(),
-              0 0 0.8rem var(--color-primary),
-              0 0 2.8rem var(--color-primary),
-              inset 0 0 1.3rem var(--color-primary);
+  box-shadow: 0 0 2px #fff, 0 0 10px var(--color-primary), 0 0 25px var(--color-primary);
 }
 
 .neon-text-flicker {
@@ -34,10 +32,10 @@
 
 @keyframes flicker {
   0%, 18%, 22%, 25%, 53%, 57%, 100% {
-      text-shadow: 0 0 5px var(--color-primary),
-              0 0 25px var(--color-primary),
-              0 0 50px var(--color-primary),
-              0 0 200px var(--color-primary);
+      text-shadow: 0 0 5px var(--color-text),
+              0 0 25px var(--color-text),
+              0 0 50px var(--color-text),
+              0 0 100px var(--color-text);
   }
   20%, 24%, 55% {
       text-shadow: none;
@@ -46,14 +44,11 @@
 
 @keyframes pulsate{
   100%{
-      text-shadow: 0 0 4px #fff,
-                  0 0 10px #fff,
-                  0 0 23px #fff,
-                  0 0 44px var(--color-primary),
-                  0 0 67px var(--color-primary),
-                  0 0 88px var(--color-primary),
-                  0 0 120px var(--color-primary),
-                  0 0 170px var(--color-primary);
+      text-shadow: 0 0 2px #fff,
+                  0 0 4px #fff,
+                  0 0 15px var(--color-text),
+                  0 0 45px var(--color-text),
+          
   }
   0%{
       text-shadow: 0 0 2px #fff,
@@ -115,15 +110,15 @@ div {
 .neon-btn-sm:hover{
   background-color: var(--color-primary);
   color: white;
-  box-shadow: 0 0 2px #fff,
-              0 0 4px #fff,
-              0 0 10px var(--color-primary),
-              0 0 15px var(--color-primary),
-              0 0 30px var(--color-primary),
+  filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px var(--color-primary))
+    drop-shadow(0 0 20px var(--color-primary));
 }
 
-.heart {
-  stroke: var(--color-primary);
+
+.heart{
+  stroke:var(--color-text);
+}
+.heart:hover {
   filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 10px var(--color-primary))
     drop-shadow(0 0 20px var(--color-primary));
 }
