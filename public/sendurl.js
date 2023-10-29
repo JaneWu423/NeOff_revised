@@ -34,11 +34,34 @@ chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
 
   });
 });
+
+
+
+
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    promptUserForPreference(tab.url);
+  if (changeInfo.status === "complete" && tab.url) {
+    promptUserForFeedback(tab.url);
   }
 });
+
+const promptUserForFeedback = async (url) => {
+  console.log(JSON.stringify(url));
+  const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
+  const querySnapshot = await getDocs(q);
+  if (!querySnapshot.empty) {
+    console.log(2);
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl:  'https://icon.horse/icon/youtube.com', // You can provide the path to your extension's icon or another relevant icon
+      title: 'URL Notification',
+      message: "The current URL exists in the dataset!",
+    });
+  }
+  // Add any other logic you want for this function
+};
+
+
 function showNotification(title, message) {
   chrome.notifications.create('Id', {
     type: 'basic',
