@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { initializeApp } from "firebase/app";
 const firebaseConfig = {
@@ -11,7 +11,7 @@ const firebaseConfig = {
     appId: "1:700079134322:web:81c95ff7175e428c2354eb"
   };
 
-import { getFirestore, collection, query, where, doc, getDoc, setDoc, addDoc, updateDoc, increment, limit , getDocs} from "firebase/firestore";
+import { getFirestore, collection, query, where, doc, getDoc, setDoc, addDoc, updateDoc, increment, limit , getDocs, orderBy} from "firebase/firestore";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -51,7 +51,7 @@ function getValidUrl(url) {
 const NeonObj = ({ data }) => {
     const url = data.url;
     const name = data.name;
-    const icon = data.icon;
+    const icon = data.iconUrl;
     const like = data.like;
     const dislike = data.dislike;
 
@@ -138,7 +138,8 @@ const NeonList = ({ list }) => {
 }
 const defaultData = [{ url: "", name: "", icon: "", like: 0, dislike: 0, report: 0 }];
 const getName = (url) =>{
-    fetch(url, {
+    const validUrl = getValidUrl(url);
+    fetch(validUrl, {
         mode: 'no-cors',
       })
         .then(response => response.text())
@@ -146,7 +147,7 @@ const getName = (url) =>{
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const title = doc.querySelector('title').innerText;
-        console.log(title);
+        return title;
         }).catch(err => {return null;});
 }
 export const Recommend = () => {
@@ -180,14 +181,34 @@ export const Recommend = () => {
     let [text, setText] = useState("");
     let [rec, setRec] = useState(defaultData);
 
-    const neonEffect = function () {
-        text = !text ? "Neon Effect" : ""
-        setText(text);
-        fetch("/recommend/random").then(data => data.json()).then(res => {
-            setRec(res);
-            console.log([res])
-        });
+    const randomSite = async function () {
+        const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            let ref = querySnapshot.docs[0].ref; 
+            let ret = await updateDoc(ref, {
+               like: increment(1)
+            });
+        } else {
+            return "Not exist"
+        }
     }
+
+    const selectTop = function(){
+        console.log(0)
+        const urlsRef = collection(db, "urls");
+        console.log(0.5)
+        const q = query(urlsRef, orderBy("like"), limit(5));
+        console.log(1)
+        const ret = [];
+        const querySnapshot = getDocs(q).then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.id, " => ", doc.data());
+                ret.push({url: doc.data().url, iconUrl: doc.data().iconUrl, like: doc.data().like, dislike: doc.data().dislike, name: doc.data().name})
+            });
+            setRec(ret)
+    })}
+
     const handleInputChange = (e) => {
         setInputVal(e.target.value);
       };
@@ -198,20 +219,28 @@ export const Recommend = () => {
             </header>
 
             <div className="container">
-                <label htmlFor="textInput">Add an URL?</label>
+                <div style={{display: "flex", flexDirection:"column", alignItems:"center"}}>
+                <h1 className="neon-text-pulse" style={{marginTop:"0.5em",marginBottom:"0.2em",fontSize:"15px"}}>Share Site?</h1>
                 <input
                     type="text"
                     id="textInput"
                     name="textInput"
                     onChange={handleInputChange}
                 />
-                 <div className="neon-btn" onClick={addUrl}>
+                 <div className="neon-btn" onClick={addUrl} style={{marginTop:"0.2em", fontSize:"15px"}}>
                     <NeonText text="Add Site" />
                 </div>
-                <div className="neon-btn" onClick={neonEffect}>
-                    <NeonText text="Random Site" />
                 </div>
-                <div style={{ marginTop: "1em" }}>
+                <hr className="divider"/>
+                <div style={{display: "flex", flexDirection:"column", alignItems:"center"}}>
+                    <div className="neon-btn" onClick={randomSite} style={{marginTop:"0.5em"}}>
+                        <NeonText text="Random Site" />
+                    </div>
+                    <div className="neon-btn" onClick={selectTop} style={{marginTop:"0.5em"}}>
+                        <NeonText text="Top Site" />
+                    </div>
+                </div>
+                <div style={{ marginTop: "0.5em" }}>
                     {rec === defaultData ? null : <NeonList list={rec} />}
                 </div>
             </div>
