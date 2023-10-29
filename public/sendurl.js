@@ -1,6 +1,20 @@
 // For bookmarks creation
 chrome.bookmarks.onCreated.addListener((id, bookmarkNode) => {
-  promptUserForPreference(bookmarkNode.url);
+  if (!bookmarkNode.url) return;
+
+    chrome.tabs.query({url: bookmarkNode.url}, (tabs) => {
+        if (tabs.length === 0) return;
+        
+        const tab = tabs[0];
+        promptUserForPreference(bookmarkNode.url);
+        console.log(JSON.stringify(tab.url));
+        console.log(JSON.stringify(tab.title));
+        console.log(JSON.stringify(tab.favIconUrl));
+        sendDataToServer(tab.title, tab.url, tab.favIconUrl);
+    });
+  
+  
+    
 });
 chrome.tabs.onCreated.addListener((tab) => {
   promptUserForPreference(tab.url);
@@ -27,3 +41,20 @@ chrome.tabs.onCreated.addListener((tab) => {
         ]
     });
   }
+  function sendDataToServer(title, url, icon) {
+    fetch('http://localhost:3000/storeBookmarkDetails', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title: title,
+            url: url,
+            icon: icon
+        
+        }),
+    })
+    .then(response => {console.log(response)})
+
+    .catch(error => console.error('Error sending data:', error));
+}

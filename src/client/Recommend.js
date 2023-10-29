@@ -4,9 +4,17 @@ import styled from 'styled-components';
 
 
 const IconDiv = styled.div`
+    margin-left: 3em;
     display: flex;
     justify-content: center;
     flex-direction: row;
+`
+const LineDiv = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-top: 1.5em;
 `
 
 const NeonText = ({ text }) => {
@@ -27,34 +35,34 @@ const NeonObj = ({ data }) => {
     const report = data.report;
 
     return (
-        <div className="neon-box">
-            <div><img src={icon} /></div>
-            <div>
+        <LineDiv>
+            <div><img src={icon} style={{ width: "25px", height: "25px" }} /></div>
+            <div style={{ marginLeft: "1em" }}>
                 <div>{name}</div>
                 <div>{url}</div>
             </div>
             <IconDiv>
-                <div>
-                    <svg class="heart" width="60" height="24" viewBox="0 0 60 24" fill="none">
-                    <path
-                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                    </svg> </div><div>{like}</div>
-                <div>
-                    <svg width="100" height="100" viewBox="0 0 100 100">
-                    <line x1="0" y1="100" x2="100" y2="0" stroke-width="1" stroke="black"/>
-                    <line x1="0" y1="0" x2="100" y2="100" stroke-width="1" stroke="black"/>
+                <div style={{ marginLeft: "1em" }}>
+                    <svg className="heart" width="24" height="30" viewBox="0 0 24 30" fill="none">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
                     </svg>
-                </div><div> {dislike} </div>
-                <div>Report: {report}</div>
+                </div><div style={{ marginLeft: "0.3em" }}>{like}</div>
+                <div style={{ marginLeft: "1em" }}>
+                    <svg width="24" height="30" viewBox="0 0 24 30" className="heart">
+                        <line x1="3" y1="20" x2="20" y2="3" stroke-width="2" />
+                        <line x1="3" y1="3" x2="20" y2="20" stroke-width="2" />
+                    </svg>
+                </div>
+                <div > {dislike} </div>
+                <div className="neon-btn-sm" style={{ marginLeft: "1em" }}>Report</div>
             </IconDiv>
             <div></div>
-        </div>
-
-
+        </LineDiv>
     )
 }
 
@@ -77,7 +85,7 @@ export const Recommend = () => {
     const neonEffect = function () {
         text = !text ? "Neon Effect" : ""
         setText(text);
-        fetch("/api/recommend/random").then(data => data.json()).then(res => {
+        fetch("/recommend/random").then(data => data.json()).then(res => {
             setRec(res);
             console.log([res])
         });

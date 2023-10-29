@@ -9,9 +9,11 @@
     },
     "permissions": [
       "bookmarks",
-      "notifications"
-    ],
+      "notifications",
+      "tabs",
+      "downloads",
+      "http://localhost:3000/"],
     "background": {
-      "service_worker": "./public/sendurl.js" 
-    }
+        "service_worker": "./public/sendurl.js" 
+      }
 }
