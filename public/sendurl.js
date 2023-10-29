@@ -76,7 +76,7 @@ function showNotification(title, message) {
     message: message,
   });
 }
-const like = async function (url) {
+const like = async function (url,name) {
   const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
   const querySnapshot = await getDocs(q);
   if (!querySnapshot.empty) {
@@ -89,7 +89,7 @@ const like = async function (url) {
       dislike: 0,
       iconUrl: `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=16`,
       like: 0,
-      name: "Test",
+      name: name,
       report: 0,
       url: url,
       totalViewed: 0,
@@ -137,7 +137,7 @@ chrome.notifications.onButtonClicked.addListener((thisNoteId, buttonIndex) => {
 
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         var currentTab = tabs[0];
-        like(currentTab.url); // Log the URL of the current tab
+        like(currentTab.url,currentTab.title); // Log the URL of the current tab
       });
 
       break;
