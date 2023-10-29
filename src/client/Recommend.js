@@ -25,15 +25,16 @@ const IconDiv = styled.div`
 `
 const LineDiv = styled.div`
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: row;
-    margin-top: 1.5em;
+    margin-top: 0.5em;
+    width: 100%;
+    justify-content: space-between;
 `
 
 const NeonText = ({ text }) => {
     return (
-        <div className="neon-text-flicker">
+        <div className="neon-text-pulse">
             {text}
         </div>
     )
@@ -98,9 +99,13 @@ const NeonObj = ({ data }) => {
 
     return (
         <LineDiv className="neon-text-box">
-            <div><img src={icon} style={{ width: "25px", height: "25px" }} /></div>
-            <div style={{ marginLeft: "1em" }}>
-                <a href={validUrl} style={{textDecoration: "none"}}><NeonText text={name}/></a>
+            <div style={{display:"flex",flexDirection:"row"}}>
+                <img src={icon} style={{ width: "25px", height: "25px" }} />
+
+                <div style={{ marginLeft: "1em" }}>
+                    <NeonText text={name} />
+                    <a href={validUrl} style={{textDecoration: "none"}}>Visit Site</a>
+                </div>
             </div>
             <IconDiv>
                 <div style={{ marginLeft: "1em" }}>
@@ -220,7 +225,7 @@ export const Recommend = () => {
 
             <div className="container">
                 <div style={{display: "flex", flexDirection:"column", alignItems:"center"}}>
-                <h1 className="neon-text-pulse" style={{marginTop:"0.5em",marginBottom:"0.2em",fontSize:"15px"}}>Share Site?</h1>
+                <h1 className="neon-text-flicker" style={{marginTop:"0.5em",marginBottom:"0.2em",fontSize:"15px"}}>Share Site?</h1>
                 <input
                     type="text"
                     id="textInput"

@@ -130,3 +130,8 @@ div {
   border-top: 1px solid #fff; /* Adjust the style and color as needed */
   margin: 10px 0; /* You can adjust the top and bottom margin */
 }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
