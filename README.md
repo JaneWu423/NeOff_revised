@@ -1,6 +1,6 @@
 # NeOff
 
-The NeOff Extension is a browser extension that brings a vibrant and neon-inspired experience to your web browsing. It allows users to explore top shared websites, generate random sites, and actively share their own favorite websites with others.
+The NeOff Extension is a Chrome browser extension that brings a vibrant and neon-inspired experience to your web browsing. It allows users to explore top shared websites, generate random sites, and actively share their own favorite websites with others.
 
 ## Features
 
