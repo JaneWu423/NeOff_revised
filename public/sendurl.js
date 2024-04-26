@@ -3,12 +3,13 @@ import React from "react";
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD68VVTgiVceafaNB-Brrp-I9-_xiTLEBo",
-  authDomain: "vandyhack2023.firebaseapp.com",
-  projectId: "vandyhack2023",
-  storageBucket: "vandyhack2023.appspot.com",
-  messagingSenderId: "700079134322",
-  appId: "1:700079134322:web:81c95ff7175e428c2354eb",
+  apiKey: "AIzaSyBm_qDRF7t6-6VYYw0zEZ2UmA3G1uN08Ms",
+  authDomain: "web-project-storage.firebaseapp.com",
+  projectId: "web-project-storage",
+  storageBucket: "web-project-storage.appspot.com",
+  messagingSenderId: "529105109859",
+  appId: "1:529105109859:web:d193dd87759bfaf1790956",
+  measurementId: "G-EQPYNTG8CB",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -44,7 +45,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 const promptUserForFeedback = async (url) => {
-  console.log(JSON.stringify(url));
+  // console.log(JSON.stringify(url));
   const q = query(collection(db, "urls"), where("url", "==", url), limit(1));
   const querySnapshot = await getDocs(q);
   if (!querySnapshot.empty) {

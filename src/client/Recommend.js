@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { initializeApp } from "firebase/app";
 const firebaseConfig = {
-    apiKey: "AIzaSyD68VVTgiVceafaNB-Brrp-I9-_xiTLEBo",
-    authDomain: "vandyhack2023.firebaseapp.com",
-    projectId: "vandyhack2023",
-    storageBucket: "vandyhack2023.appspot.com",
-    messagingSenderId: "700079134322",
-    appId: "1:700079134322:web:81c95ff7175e428c2354eb"
+  apiKey: "AIzaSyBm_qDRF7t6-6VYYw0zEZ2UmA3G1uN08Ms",
+  authDomain: "web-project-storage.firebaseapp.com",
+  projectId: "web-project-storage",
+  storageBucket: "web-project-storage.appspot.com",
+  messagingSenderId: "529105109859",
+  appId: "1:529105109859:web:d193dd87759bfaf1790956",
+  measurementId: "G-EQPYNTG8CB",
 };
 import { Input , InputGroup, InputLeftElement, Spinner} from '@chakra-ui/react'
 import { LinkIcon } from '@chakra-ui/icons';
@@ -120,7 +121,6 @@ const NeonObj = ({ data }) => {
                 </div>
             </div>
             <IconDiv>
-
                 <svg className="heart" width="24" height="24" viewBox="0 0 24 24" fill="none" onClick={likeUrl} style={{ marginLeft: "0.2em" }}>
                     <path
                         d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
@@ -178,14 +178,20 @@ export const Recommend = () => {
         getDocs(q).then((querySnapshot) => {
             if (querySnapshot.empty) {
                 addDoc(collection(db, "urls"), {
-                    dislike: 0,
-                    iconUrl: `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=16`,
-                    like: 0,
-                    name: url,
-                    report: 0,
-                    url: url,
-                    totalViewed: 0,
-                }).then(() => {setText("Site Shared!")}).catch(err => { setProcessing(false); });
+                  dislike: 0,
+                  iconUrl: `http://www.google.com/s2/favicons?domain=${url}&size=16`,
+                  like: 0,
+                  name: url,
+                  report: 0,
+                  url: url,
+                  totalViewed: 0,
+                })
+                  .then(() => {
+                    setText("Site Shared!");
+                  })
+                  .catch((err) => {
+                    setProcessing(false);
+                  });
             } else {
                 let ref = querySnapshot.docs[0].ref;
                 updateDoc(ref, {
@@ -214,10 +220,19 @@ export const Recommend = () => {
         return () => clearInterval(intervalId);
     }, [mode]);
 
-    const selectTop = function () {
+    const selectTop = async function () {
         setMode("top");
         const urlsRef = collection(db, "urls");
-        const q = query(urlsRef, orderBy("like", "desc"), limit(5));
+        const snapshot = await getCountFromServer(urlsRef);
+        const collectionSize = snapshot.data().count;
+        if (collectionSize == 0) {
+            return;
+        }
+        const q = query(
+          urlsRef,
+          orderBy("like", "desc"),
+          limit(collectionSize>5?5:collectionSize)
+        );
         const ret = [];
         getDocs(q).then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
@@ -230,13 +245,15 @@ export const Recommend = () => {
     const selectRandom = async function () {
         setMode("random");
         const randomArray = [-1, -1, -1, -1, -1];
-
-        if (collectionSize < randomArray.length) {
-            return;
-        }
+        let arr_len = randomArray.length;
         const coll = collection(db, "urls");
         const snapshot = await getCountFromServer(coll);
         const collectionSize = snapshot.data().count;
+        if (collectionSize < 1) {
+            return;
+        }else if (collectionSize < 5) {
+            arr_len = collectionSize;
+        }
 
         let randomUrls = []
         let ret = []
@@ -247,7 +264,7 @@ export const Recommend = () => {
             ret.push({ url: doc.data().url, iconUrl: doc.data().iconUrl, like: doc.data().like, dislike: doc.data().dislike, name: doc.data().name })
         });
 
-        for (let i = 0; i < randomArray.length; ++i) {
+        for (let i = 0; i < arr_len ; ++i) {
             let randomIndex = Math.floor(Math.random() * collectionSize);
             while (randomArray.includes(randomIndex)) {
                 randomIndex = Math.floor(Math.random() * collectionSize);
