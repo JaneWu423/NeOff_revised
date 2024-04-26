@@ -16,11 +16,14 @@ The NeOff Extension is a browser extension that brings a vibrant and neon-inspir
 
 - **Recommendation Feedback**: Quick response to like or dislike the sites recommended when opening those site from the extension.
 
-
-
 ## Art Style
 
 The project's art style is inspired by neon lights, creating a visually appealing and vibrant atmosphere for web browsing.
+
+## Screenshots
+
+<img width="400" alt="Screen Shot 2024-04-26 at 02 11 01" src="https://github.com/JaneWu423/NeOff_revised/assets/73491595/0655c4ab-c0b3-482d-a34b-960abb527660">
+
 
 ## Getting Started
 
@@ -31,7 +34,7 @@ To use the Neon Light Web Extension, follow these steps:
 
 ## Technologies Used
 
-- HTML, CSS, React, Node.js, Firebase, Chrome Browser API.
+- HTML, CSS, React, Node.js, Webpack, Firebase, Chrome Browser API.
 
 ## Inspiration
 
